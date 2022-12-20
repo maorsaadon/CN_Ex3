@@ -21,7 +21,6 @@ int main() {
         fprintf(stderr, "Error opening file");
         return 1;
     }
-
     //calculate file size
     fseek(f, 0, SEEK_END);
     int fileSize = (int) ftell(f);

@@ -1,19 +1,19 @@
 CC = gcc -c
-CFLAGS = -wall -g
+CFLAGS = -Wall -g
 
 all: sender receiver
 
 receiver: Receiver.o
-	gcc -Wall -g Receiver.o -o Receiver
+	gcc $(CFLAGS) Receiver.o -o Receiver
 
 sender: Sender.o
-	gcc -Wall -g Sender.o -o Sender
+	gcc $(CFLAGS) Sender.o -o Sender
 
 Receiver.o: Receiver.c
-	$(cc) $(CFLAGS) Receiver.c
+	$(CC) $(CFLAGS) Receiver.c
 
 Sender.o: Sender.c
-	$(cc) $(CFLAGS) Sender.c
+	$(CC) $(CFLAGS) Sender.c
 
 clean:
 	rm -f *.o Sender Receiver
