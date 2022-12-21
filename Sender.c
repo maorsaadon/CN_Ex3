@@ -139,7 +139,6 @@ int main() {
             return -1;
         }
 
-        // (13)
         printf("Sending part B using reno CC algorithm\n");
 
         //send the second half of the file
@@ -153,7 +152,7 @@ int main() {
 
         printf("Part B was successfully sent\n");
 
-        // (14)
+        // (13)
         char choose; //the user decision
         printf("Send again? Y = yes, N = no\n");
         scanf(" %c", &choose);
