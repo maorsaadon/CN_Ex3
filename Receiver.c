@@ -39,17 +39,17 @@ int main() {
     */
     memset(&serverAddress, 0, sizeof(serverAddress));
 
-    //address family, AF_INET(while using TCP) undighned 
+    // address family, AF_INET(while using TCP) undighned
     serverAddress.sin_family = AF_INET;
-    //any IP at this port (Address to accept any incoming messages)
+    // any IP at this port (Address to accept any incoming messages)
     serverAddress.sin_addr.s_addr = INADDR_ANY;
-    //change the port number from little endian => network endian(big endian): 
+    // change the port number from little endian => network endian(big endian):
     serverAddress.sin_port = htons(SERVER_PORT);  // network order (makes byte order consistent)
 
     // (2)
     // Bind the socket to the port with any IP at this port
     int bindResult = bind(listeningSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
-    //checking
+    // checking
     if (bindResult == -1) {
         printf("Bind failed with error code : %d", errno);
         close(listeningSocket);
@@ -78,13 +78,13 @@ int main() {
     */
     memset(&clientAddress, 0, sizeof(clientAddress));
 
-    //saving the size of clientAddress in socklen_t variable
+    // saving the size of clientAddress in socklen_t variable
     socklen_t len_clientAddress = sizeof(clientAddress);
 
     // (5)
-    //accept a connection on a socket
+    // accept a connection on a socket
     int clientSocket = accept(listeningSocket, (struct sockaddr *) &clientAddress, &len_clientAddress);
-    //checking
+    // checking
     if (clientSocket == -1) {
         printf("listen failed with error code : %d", errno);
         close(listeningSocket);
@@ -102,22 +102,22 @@ int main() {
     send(clientSocket, &signal, sizeof(int), 0);
 
     // (8)
-    long timeOfPartA[1000];//long array to save the run time of sending partA
-    bzero(timeOfPartA, 1000);//make a zero array
-    long timeOfPartB[1000];//long array to save the run time of sending partB
-    bzero(timeOfPartB, 1000);//make a zero array
-    long counter = 0;//present the number of sending the whole file
+    long timeOfPartA[1000]; // long array to save the run time of sending partA
+    bzero(timeOfPartA, 1000); // make a zero array
+    long timeOfPartB[1000]; // long array to save the run time of sending partB
+    bzero(timeOfPartB, 1000); // make a zero array
+    long counter = 0; // present the number of sending the whole file
 
 
-    int running = 1;//stop condition
+    int running = 1; // stop condition
     while (running) {
 
         // (9)
-        char cc_algo[BUFFER_SIZE];//char array for changing the algorithem
+        char cc_algo[BUFFER_SIZE]; // char array for changing the algorithem
         printf("Changing to cubic...\n");
-        strcpy(cc_algo, "cubic");//copy the string "cubic" into cc_algo
-        socklen_t len = strlen(cc_algo);//saving the size of the str in the cc_algo in socklen_t variable
-        //checking & defult the cubic algorithem
+        strcpy(cc_algo, "cubic"); // copy the string "cubic" into cc_algo
+        socklen_t len = strlen(cc_algo); // saving the size of the str in the cc_algo in socklen_t variable
+        // checking & defult the cubic algorithem
 
         if (setsockopt(listeningSocket, IPPROTO_TCP, TCP_CONGESTION, cc_algo, len) == -1) {
             perror("setsockopt");
@@ -153,12 +153,12 @@ int main() {
         if (running == 0) break; // quit the program if somthing wrong
 
         // (13)
-        gettimeofday(&current_time, NULL);//saving the current time
-        long after_partA_sec = current_time.tv_sec;//time in second
-        long after_partA_mic = current_time.tv_usec;//time in microsecond
-        long total_time_after_partA = after_partA_sec * 1000000 + after_partA_mic;//total time after
-        long total_time_partA = total_time_after_partA - total_time_before_partA;//tatal time that took part A
-        timeOfPartA[counter] = total_time_partA;//saving the time in the array
+        gettimeofday(&current_time, NULL); // saving the current time
+        long after_partA_sec = current_time.tv_sec; // time in second
+        long after_partA_mic = current_time.tv_usec; // time in microsecond
+        long total_time_after_partA = after_partA_sec * 1000000 + after_partA_mic; // total time after
+        long total_time_partA = total_time_after_partA - total_time_before_partA; // tatal time that took part A
+        timeOfPartA[counter] = total_time_partA; // saving the time in the array
 
         printf("Got part A\n");
 
@@ -207,13 +207,13 @@ int main() {
 
         if (running == 0) break;//quit the program if somthing wrong
 
-        gettimeofday(&current_time, NULL);//saving the current time
-        long after_partB_sec = current_time.tv_sec;//time in second
-        long after_partB_mic = current_time.tv_usec;//time in microsecond
-        long total_time_after_partB = after_partB_sec * 1000000 + after_partB_mic;//total time after
-        long total_time_partB = total_time_after_partB - total_time_before_partB;//tatal time that took part B
-        timeOfPartB[counter] = total_time_partB;//saving the time in the array
-        counter++;//add 1 for the counter after we finished one receinging of the whole file
+        gettimeofday(&current_time, NULL); // saving the current time
+        long after_partB_sec = current_time.tv_sec; // time in second
+        long after_partB_mic = current_time.tv_usec; // time in microsecond
+        long total_time_after_partB = after_partB_sec * 1000000 + after_partB_mic; // total time after
+        long total_time_partB = total_time_after_partB - total_time_before_partB; // tatal time that took part B
+        timeOfPartB[counter] = total_time_partB; // saving the time in the array
+        counter++; // add 1 for the counter after we finished one receinging of the whole file
 
         printf("Got part B\n");
         recv(clientSocket, &signal, sizeof(int), 0);//receiving from the sender the agreed sign
@@ -239,6 +239,7 @@ int main() {
         total_time_of_B += timeOfPartB[i];
     }
 
+    // (18)
     //calculate the average
     long average_time_of_A = (total_time_of_A / counter);
     long average_time_of_B = (total_time_of_B / counter);
