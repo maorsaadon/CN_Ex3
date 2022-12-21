@@ -82,7 +82,7 @@ int main() {
         printf("connect() failed with error code : %d", errno);
         close(sock);
         return -1;
-    } else printf("connected to server\n");
+    } else printf("connected to receiver\n");
 
     // (7)
     int signal = 0; //agreed upon sign
