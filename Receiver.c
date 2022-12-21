@@ -101,37 +101,43 @@ int main() {
     //send the agreed sign to the sender
     send(clientSocket, &signal, sizeof(int), 0);
 
+    // (8)
     long timeOfPartA[1000];//long array to save the run time of sending partA
     bzero(timeOfPartA, 1000);//make a zero array
     long timeOfPartB[1000];//long array to save the run time of sending partB
     bzero(timeOfPartB, 1000);//make a zero array
     long counter = 0;//present the number of sending the whole file
 
+
     int running = 1;//stop condition
     while (running) {
 
+        // (9)
         char cc_algo[BUFFER_SIZE];//char array for changing the algorithem
         printf("Changing to cubic...\n");
         strcpy(cc_algo, "cubic");//copy the string "cubic" into cc_algo
         socklen_t len = strlen(cc_algo);//saving the size of the str in the cc_algo in socklen_t variable
         //checking & defult the cubic algorithem
+
         if (setsockopt(listeningSocket, IPPROTO_TCP, TCP_CONGESTION, cc_algo, len) == -1) {
             perror("setsockopt");
             return -1;
         }
 
+        // (10)
         char buffer[fileSize / 2];//char array for receiving the half of the file
         int totalbytes = 0;//present the bytes that have been received
 
         printf("Waiting for part A...\n");
 
+        // (11)
         struct timeval current_time;//struct for saving current time
         gettimeofday(&current_time, NULL);//saving the current time
         long before_partA_sec = current_time.tv_sec;//time in second
         long before_partA_mic = current_time.tv_usec;//time in microsecond
         long total_time_before_partA = before_partA_sec * 1000000 + before_partA_mic;//total time befor
 
-
+        // (12)
         while (totalbytes < (fileSize / 2)) {
             //receive the first part of the file
             int bytesgot = recv(clientSocket, buffer + totalbytes, sizeof(char), 0);
@@ -146,6 +152,7 @@ int main() {
 
         if (running == 0) break; // quit the program if somthing wrong
 
+        // (13)
         gettimeofday(&current_time, NULL);//saving the current time
         long after_partA_sec = current_time.tv_sec;//time in second
         long after_partA_mic = current_time.tv_usec;//time in microsecond
@@ -157,12 +164,14 @@ int main() {
 
         printf("Sending authntication check\n");
 
+        // (14)
         int receiver_xor = 2421 ^ 7494; //the receiver xor
         send(clientSocket, &receiver_xor, sizeof(int),
              0);//the receiver send his xor to the sender for the authentication
 
         printf("Authontication sent\n");
 
+        // (15)
         printf("Changeing to reno..\n");
 
         strcpy(cc_algo, "reno");//copy the string "reno" into cc_algo
@@ -173,6 +182,7 @@ int main() {
             return -1;
         }
 
+        // (16)
         printf("Waiting for part B...\n");
 
         totalbytes = 0;
@@ -213,13 +223,15 @@ int main() {
     close(clientSocket);//close the clientSocket
     close(listeningSocket);//listeningSocket
 
+
+    // (17)
     long total_time_of_A = 0;//present the tatal time for receiving part A(for all times)
     long total_time_of_B = 0;//present the tatal time for receiving part A(for all times)
 
     for (int i = 0; i < counter; i++) {
-        printf("Run time of part A, number %d : (%ld second,%ld microseconed)\n", i + 1, (timeOfPartA[i] / 1000000),
+        printf("Run time of part A, number %d : (%ld second,%ld microseconds)\n", i + 1, (timeOfPartA[i] / 1000000),
                (timeOfPartA[i] % 1000000));
-        printf("Run time of part B, number %d : (%ld second,%ld microseconed)\n", i + 1, (timeOfPartB[i] / 1000000),
+        printf("Run time of part B, number %d : (%ld second,%ld microseconds)\n", i + 1, (timeOfPartB[i] / 1000000),
                (timeOfPartB[i] % 1000000));
 
         //sum the time of each receiving (part A/B)
@@ -231,9 +243,9 @@ int main() {
     long average_time_of_A = (total_time_of_A / counter);
     long average_time_of_B = (total_time_of_B / counter);
 
-    printf("The average time of part A is: (%ld second,%ld microsecond)\n", (average_time_of_A / 1000000),
+    printf("The average time of part A is: (%ld second,%ld microseconds)\n", (average_time_of_A / 1000000),
            (average_time_of_A % 1000000));
-    printf("The average time of part B is: (%ld second,%ld microsecond)\n", (average_time_of_B / 1000000),
+    printf("The average time of part B is: (%ld second,%ld microseconds)\n", (average_time_of_B / 1000000),
            (average_time_of_B % 1000000));
 
     return 0;
