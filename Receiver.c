@@ -71,7 +71,6 @@ int main() {
     // Accept and incoming connection
     struct sockaddr_in clientAddress;
 
-    // (4)
     /*
     fills the first 'sizeof(clientAddress)' bytes of the memory 
     area pointed to by &clientAddress with the constant 0.
@@ -81,7 +80,7 @@ int main() {
     // saving the size of clientAddress in socklen_t variable
     socklen_t len_clientAddress = sizeof(clientAddress);
 
-    // (5)
+    // (4)
     // accept a connection on a socket
     int clientSocket = accept(listeningSocket, (struct sockaddr *) &clientAddress, &len_clientAddress);
     // checking
@@ -92,7 +91,7 @@ int main() {
     } else printf("A new client connection accepted\n");
 
 
-    // (7)
+    // (5)
     int fileSize; // the file size that we receiv from the sender
     int signal = 0; // agreed sign
 
@@ -101,7 +100,7 @@ int main() {
     //send the agreed sign to the sender
     send(clientSocket, &signal, sizeof(int), 0);
 
-    // (8)
+    // (6)
     long timeOfPartA[1000]; // long array to save the run time of sending partA
     bzero(timeOfPartA, 1000); // make a zero array
     long timeOfPartB[1000]; // long array to save the run time of sending partB
@@ -112,7 +111,7 @@ int main() {
     int running = 1; // stop condition
     while (running) {
 
-        // (9)
+        // (7)
         char cc_algo[BUFFER_SIZE]; // char array for changing the algorithem
         printf("Changing to cubic...\n");
         strcpy(cc_algo, "cubic"); // copy the string "cubic" into cc_algo
@@ -124,20 +123,20 @@ int main() {
             return -1;
         }
 
-        // (10)
-        char buffer[fileSize / 2];//char array for receiving the half of the file
-        int totalbytes = 0;//present the bytes that have been received
+        // (8)
+        char buffer[fileSize / 2]; // char array for receiving the half of the file
+        int totalbytes = 0; // present the bytes that have been received
 
         printf("Waiting for part A...\n");
 
-        // (11)
+        // (9)
         struct timeval current_time;//struct for saving current time
         gettimeofday(&current_time, NULL);//saving the current time
         long before_partA_sec = current_time.tv_sec;//time in second
         long before_partA_mic = current_time.tv_usec;//time in microsecond
         long total_time_before_partA = before_partA_sec * 1000000 + before_partA_mic;//total time befor
 
-        // (12)
+        // (10)
         while (totalbytes < (fileSize / 2)) {
             //receive the first part of the file
             int bytesgot = recv(clientSocket, buffer + totalbytes, sizeof(char), 0);
@@ -152,7 +151,7 @@ int main() {
 
         if (running == 0) break; // quit the program if somthing wrong
 
-        // (13)
+        // (11)
         gettimeofday(&current_time, NULL); // saving the current time
         long after_partA_sec = current_time.tv_sec; // time in second
         long after_partA_mic = current_time.tv_usec; // time in microsecond
@@ -164,14 +163,14 @@ int main() {
 
         printf("Sending authntication check\n");
 
-        // (14)
+        // (12)
         int receiver_xor = 2421 ^ 7494; //the receiver xor
         send(clientSocket, &receiver_xor, sizeof(int),
              0);//the receiver send his xor to the sender for the authentication
 
         printf("Authontication sent\n");
 
-        // (15)
+        // (13)
         printf("Changeing to reno..\n");
 
         strcpy(cc_algo, "reno");//copy the string "reno" into cc_algo
@@ -182,7 +181,6 @@ int main() {
             return -1;
         }
 
-        // (16)
         printf("Waiting for part B...\n");
 
         totalbytes = 0;
@@ -224,7 +222,7 @@ int main() {
     close(listeningSocket);//listeningSocket
 
 
-    // (17)
+    // (15)
     long total_time_of_A = 0;//present the tatal time for receiving part A(for all times)
     long total_time_of_B = 0;//present the tatal time for receiving part A(for all times)
 
@@ -239,7 +237,7 @@ int main() {
         total_time_of_B += timeOfPartB[i];
     }
 
-    // (18)
+    // (16)
     //calculate the average
     long average_time_of_A = (total_time_of_A / counter);
     long average_time_of_B = (total_time_of_B / counter);
