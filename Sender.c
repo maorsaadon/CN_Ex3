@@ -17,6 +17,7 @@
 int main() {
 
 
+
     // (1)
     //open a file
     FILE *f = fopen(FILE_TO_SEND, "r");
